@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPlatform - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: #34495e;
+        }
+
+        .sidebar-menu i {
+            margin-right: 1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            color: #2c3e50;
+        }
+
+        .content-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .content-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Dashboard Stats */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card h4 {
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-card p {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+
+        .edit-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .add-btn {
+            background-color: #2ecc71;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .add-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .add-btn:hover {
+            background-color: #27ae60;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 50%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .close-modal:hover {
+            color: #2c3e50;
+        }
+
+        .modal-title {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .cancel-btn {
+            background-color: #95a5a6;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .cancel-btn:hover {
+            background-color: #7f8c8d;
+        }
+
+        .submit-btn {
+            background-color: #2ecc71;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <h1>EduPlatform</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+        </ul>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" data-section="students"><i class="fas fa-user-graduate"></i> Students</a></li>
+                <!-- <li><a href="#" data-section="teachers"><i class="fas fa-chalkboard-teacher"></i> Teachers</a></li>
+                <li><a href="#" data-section="courses"><i class="fas fa-book"></i> Courses</a></li>
+                <li><a href="#" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li> -->
+                <li><a href="login.html" onclick="return logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Admin Dashboard</h2>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <h3>Welcome to Your Dashboard</h3>
+                <p>Here you can manage the educational platform and track system performance.</p>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h4>Total Students</h4>
+                        <p>0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Total Teachers</h4>
+                        <p>0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>System Status</h4>
+                        <p>Online</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Section -->
+            <div id="students-section" class="content-section hidden">
+                <h3>Manage A/L General English Students</h3>
+                
+                <div class="dashboard-header">
+                    <button class="add-btn" id="addStudentBtn"><i class="fas fa-plus"></i> Add New Student</button>
+                </div>
+                
+                <!-- Students Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>John Doe</td>
+                                <td>john@example.com</td>
+                                <td>
+                                    <button class="action-btn edit-btn">Edit</button>
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Sarah Johnson</td>
+                                <td>sarah@example.com</td>
+                                <td>
+                                    <button class="action-btn edit-btn">Edit</button>
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Michael Brown</td>
+                                <td>michael@example.com</td>
+                                <td>
+                                    <button class="action-btn edit-btn">Edit</button>
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Add Student Modal -->
+                <div id="addStudentModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal">&times;</span>
+                        <h3 class="modal-title">Add New A/L General English Student</h3>
+                        <form id="addStudentForm">
+                            <div class="form-group">
+                                <label for="studentName">Full Name</label>
+                                <input type="text" id="studentName" name="studentName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentEmail">Email</label>
+                                <input type="email" id="studentEmail" name="studentEmail" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" id="cancelAddStudent">Cancel</button>
+                                <button type="submit" class="submit-btn">Add Student</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teachers Section -->
+            <div id="teachers-section" class="content-section hidden">
+                <h3>Manage Teachers</h3>
+                <p>Teacher management functionality will be implemented here.</p>
+            </div>
+
+            <!-- Courses Section -->
+            <div id="courses-section" class="content-section hidden">
+                <h3>Manage Courses</h3>
+                <p>Course management functionality will be implemented here.</p>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="content-section hidden">
+                <h3>Platform Settings</h3>
+                <p>Platform settings and configuration will be implemented here.</p>
+            </div>
+
+            <!-- Papers Section -->
+            <div id="papers-section" class="content-section hidden">
+                <h3>Past Papers</h3>
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>2023 A/L General English Paper</h4>
+                        <p>Complete paper with marking scheme</p>
+                        <button class="action-btn download-btn">Download</button>
+                    </div>
+                    <div class="resource-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>2022 A/L General English Paper</h4>
+                        <p>Complete paper with marking scheme</p>
+                        <button class="action-btn download-btn">Download</button>
+                    </div>
+                    <div class="resource-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Essay Writing Guide</h4>
+                        <p>Tips and techniques for essay writing</p>
+                        <button class="action-btn download-btn">Download</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Videos Section -->
+            <div id="videos-section" class="content-section hidden">
+                <h3>Video Lessons</h3>
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <i class="fas fa-video"></i>
+                        <h4>Essay Writing Techniques</h4>
+                        <p>Master the art of essay writing</p>
+                        <button class="action-btn watch-btn">Watch</button>
+                    </div>
+                    <div class="resource-card">
+                        <i class="fas fa-video"></i>
+                        <h4>Grammar Fundamentals</h4>
+                        <p>Essential grammar rules and usage</p>
+                        <button class="action-btn watch-btn">Watch</button>
+                    </div>
+                    <div class="resource-card">
+                        <i class="fas fa-video"></i>
+                        <h4>Reading Comprehension</h4>
+                        <p>Strategies for better understanding</p>
+                        <button class="action-btn watch-btn">Watch</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div id="notes-section" class="content-section hidden">
+                <h3>Study Notes</h3>
+                <div class="resource-grid">
+                    <div class="resource-card">
+                        <i class="fas fa-book"></i>
+                        <h4>Grammar Rules</h4>
+                        <p>Comprehensive grammar guide</p>
+                        <button class="action-btn view-btn">View</button>
+                    </div>
+                    <div class="resource-card">
+                        <i class="fas fa-book"></i>
+                        <h4>Vocabulary List</h4>
+                        <p>Essential words and phrases</p>
+                        <button class="action-btn view-btn">View</button>
+                    </div>
+                    <div class="resource-card">
+                        <i class="fas fa-book"></i>
+                        <h4>Writing Tips</h4>
+                        <p>Improve your writing skills</p>
+                        <button class="action-btn view-btn">View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Function to show the selected section and hide others
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update active state in sidebar
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId.replace('-section', '')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Alert function
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            // Add alert styles
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.padding = '15px 25px';
+            alertDiv.style.borderRadius = '5px';
+            alertDiv.style.color = 'white';
+            alertDiv.style.zIndex = '1000';
+            alertDiv.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            
+            if (type === 'error') {
+                alertDiv.style.backgroundColor = '#e74c3c';
+            } else if (type === 'success') {
+                alertDiv.style.backgroundColor = '#2ecc71';
+            }
+            
+            document.body.appendChild(alertDiv);
+            
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Add event listeners when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar navigation
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a[data-section]');
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    showSection(sectionId);
+                });
+            });
+            
+            // Add Student Modal
+            const addStudentBtn = document.getElementById('addStudentBtn');
+            const addStudentModal = document.getElementById('addStudentModal');
+            const closeModalBtn = document.querySelector('.close-modal');
+            const cancelAddStudentBtn = document.getElementById('cancelAddStudent');
+            const addStudentForm = document.getElementById('addStudentForm');
+            const studentsTable = document.querySelector('#students-section table tbody');
+            
+            if (addStudentBtn) {
+                addStudentBtn.addEventListener('click', function() {
+                    openModal('addStudentModal');
+                });
+            }
+            
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    closeModal('addStudentModal');
+                });
+            }
+            
+            if (cancelAddStudentBtn) {
+                cancelAddStudentBtn.addEventListener('click', function() {
+                    closeModal('addStudentModal');
+                });
+            }
+            
+            if (addStudentForm) {
+                addStudentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const studentName = document.getElementById('studentName').value.trim();
+                    const studentEmail = document.getElementById('studentEmail').value.trim();
+                    
+                    // Validation checks
+                    if (!studentName) {
+                        showAlert('Please enter student\'s full name', 'error');
+                        return;
+                    }
+                    
+                    if (studentName.length < 3) {
+                        showAlert('Full name must be at least 3 characters long', 'error');
+                        return;
+                    }
+                    
+                    if (!studentEmail) {
+                        showAlert('Please enter student\'s email address', 'error');
+                        return;
+                    }
+                    
+                    if (!isValidEmail(studentEmail)) {
+                        showAlert('Please enter a valid email address', 'error');
+                        return;
+                    }
+                    
+                    // Add new student to table
+                    const newRow = document.createElement('tr');
+                    const studentId = studentsTable.children.length + 1;
+                    
+                    newRow.innerHTML = `
+                        <td>${studentId}</td>
+                        <td>${studentName}</td>
+                        <td>${studentEmail}</td>
+                        <td>
+                            <button class="action-btn edit-btn">Edit</button>
+                            <button class="action-btn delete-btn">Delete</button>
+                        </td>
+                    `;
+                    
+                    studentsTable.appendChild(newRow);
+                    
+                    // Show success message
+                    showAlert('Student added successfully!', 'success');
+                    
+                    // Close modal and reset form
+                    closeModal('addStudentModal');
+                    addStudentForm.reset();
+                    
+                    // Add event listeners to new buttons
+                    addRowEventListeners(newRow);
+                });
+            }
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(e) {
+                if (e.target === addStudentModal) {
+                    closeModal('addStudentModal');
+                }
+            });
+            
+            // Function to add event listeners to table rows
+            function addRowEventListeners(row) {
+                const editBtn = row.querySelector('.edit-btn');
+                const deleteBtn = row.querySelector('.delete-btn');
+                
+                editBtn.addEventListener('click', function() {
+                    const cells = row.cells;
+                    const currentName = cells[1].textContent;
+                    const currentEmail = cells[2].textContent;
+                    
+                    const newName = prompt('Enter new name:', currentName);
+                    if (newName && newName.trim() !== '') {
+                        cells[1].textContent = newName.trim();
+                        showAlert('Student information updated successfully!', 'success');
+                    }
+                });
+                
+                deleteBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this student?')) {
+                        row.remove();
+                        showAlert('Student deleted successfully!', 'success');
+                        
+                        // Update IDs of remaining rows
+                        const rows = studentsTable.querySelectorAll('tr');
+                        rows.forEach((row, index) => {
+                            row.cells[0].textContent = index + 1;
+                        });
+                    }
+                });
+            }
+            
+            // Add event listeners to existing rows
+            const existingRows = studentsTable.querySelectorAll('tr');
+            existingRows.forEach(row => {
+                addRowEventListeners(row);
+            });
+        });
+
+        // Email validation function
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Logout function
+        function logout() {
+            console.log('Logging out...');
+            // In a real application, this would clear session data or cookies
+            return true; // Allow navigation to login page
+        }
+    </script>
+</body>
+</html> 

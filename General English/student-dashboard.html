@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPlatform - Student Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* .student-info {
+            background-color: #34495e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        } */
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            color: white;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .info-item .fa-circle {
+            color: #2ecc71;
+            font-size: 0.8rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: #34495e;
+        }
+
+        .sidebar-menu i {
+            margin-right: 1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            color: #2c3e50;
+        }
+
+        .content-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .content-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Dashboard Stats */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card h4 {
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-card p {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Content Cards */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .content-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .content-card-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .content-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .content-card-description {
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .content-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .content-card-meta {
+            color: #95a5a6;
+            font-size: 0.8rem;
+        }
+
+        .download-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .download-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 0.5rem;
+            width: 100%;
+        }
+
+        .search-box i {
+            color: #95a5a6;
+        }
+
+        .filter-dropdown {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <h1>EduPlatform</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+        </ul>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Student Dashboard</h2>
+            <div class="student-info">
+                <!-- <div class="info-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Class: 10</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-circle"></i>
+                    <span>Status: Active</span>
+                </div> -->
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" data-section="papers"><i class="fas fa-file-alt"></i> Papers</a></li>
+                <li><a href="#" data-section="videos"><i class="fas fa-video"></i> Videos</a></li>
+                <li><a href="#" data-section="notes"><i class="fas fa-sticky-note"></i> Notes</a></li>
+                <li><a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Student Dashboard</h2>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <h3>Welcome to Your Dashboard</h3>
+                <p>Here you can access your learning materials and track your progress.</p>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h4>Total Materials</h4>
+                        <p>0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Total Videos</h4>
+                        <p>0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>System Status</h4>
+                        <p>Online</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Papers Section -->
+            <div id="papers-section" class="content-section hidden">
+                <h3>Available Papers</h3>
+                
+                <div class="filter-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search papers...">
+                    </div>
+                    <select class="filter-dropdown">
+                        <option value="all">All Topics</option>
+                        <option value="reading">Reading Comprehension</option>
+                        <option value="writing">Writing Skills</option>
+                        <option value="grammar">Grammar</option>
+                        <option value="vocabulary">Vocabulary</option>
+                    </select>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Reading Comprehension Practice</h4>
+                            <div class="content-card-icon" style="background-color: #3498db;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Practice papers for reading comprehension with various text types and question formats.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Added: 2 days ago</span>
+                            <button class="download-btn">Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Essay Writing Guide</h4>
+                            <div class="content-card-icon" style="background-color: #2ecc71;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Comprehensive guide for different types of essays with sample answers and marking criteria.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Added: 1 week ago</span>
+                            <button class="download-btn">Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Grammar Practice Papers</h4>
+                            <div class="content-card-icon" style="background-color: #e74c3c;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Practice papers focusing on grammar rules, sentence structures, and common errors.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Added: 3 days ago</span>
+                            <button class="download-btn">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Videos Section -->
+            <div id="videos-section" class="content-section hidden">
+                <h3>Educational Videos</h3>
+                
+                <div class="filter-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search videos...">
+                    </div>
+                    <select class="filter-dropdown">
+                        <option value="all">All Topics</option>
+                        <option value="reading">Reading Skills</option>
+                        <option value="writing">Writing Skills</option>
+                        <option value="grammar">Grammar</option>
+                        <option value="vocabulary">Vocabulary</option>
+                    </select>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Advanced Reading Strategies</h4>
+                            <div class="content-card-icon" style="background-color: #3498db;">
+                                <i class="fas fa-video"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Learn effective strategies for tackling complex reading comprehension passages and questions.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Duration: 45 minutes</span>
+                            <button class="download-btn">Watch</button>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Essay Writing Masterclass</h4>
+                            <div class="content-card-icon" style="background-color: #2ecc71;">
+                                <i class="fas fa-video"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Step-by-step guide to writing high-scoring essays with practical examples and tips.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Duration: 30 minutes</span>
+                            <button class="download-btn">Watch</button>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Advanced Grammar Rules</h4>
+                            <div class="content-card-icon" style="background-color: #e74c3c;">
+                                <i class="fas fa-video"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">In-depth explanation of complex grammar rules and their application in writing.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Duration: 60 minutes</span>
+                            <button class="download-btn">Watch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div id="notes-section" class="content-section hidden">
+                <h3>Study Notes</h3>
+                
+                <div class="filter-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search notes...">
+                    </div>
+                    <select class="filter-dropdown">
+                        <option value="all">All Topics</option>
+                        <option value="reading">Reading Skills</option>
+                        <option value="writing">Writing Skills</option>
+                        <option value="grammar">Grammar</option>
+                        <option value="vocabulary">Vocabulary</option>
+                    </select>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Reading Comprehension Techniques</h4>
+                            <div class="content-card-icon" style="background-color: #3498db;">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Comprehensive notes on different reading strategies, question types, and answer techniques.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Added: 1 week ago</span>
+                            <button class="download-btn">Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Essay Writing Guide</h4>
+                            <div class="content-card-icon" style="background-color: #2ecc71;">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Detailed notes on essay structure, planning, and writing techniques for different types of essays.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Added: 2 weeks ago</span>
+                            <button class="download-btn">Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <div class="content-card-header">
+                            <h4 class="content-card-title">Advanced Vocabulary List</h4>
+                            <div class="content-card-icon" style="background-color: #e74c3c;">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                        </div>
+                        <p class="content-card-description">Comprehensive list of advanced vocabulary with definitions, usage examples, and synonyms.</p>
+                        <div class="content-card-footer">
+                            <span class="content-card-meta">Added: 3 days ago</span>
+                            <button class="download-btn">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Function to show the selected section and hide others
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update active state in sidebar
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId.replace('-section', '')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Add event listeners to sidebar links
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a[data-section]');
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    showSection(sectionId);
+                });
+            });
+            
+            // Add event listeners to download/watch buttons
+            const actionButtons = document.querySelectorAll('.download-btn');
+            
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const card = this.closest('.content-card');
+                    const title = card.querySelector('.content-card-title').textContent;
+                    const section = card.closest('.content-section').id;
+                    
+                    if (section.includes('videos')) {
+                        showAlert(`Playing ${title}...`, 'success');
+                    } else {
+                        showAlert(`Downloading ${title}...`, 'success');
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add search functionality to all search boxes
+            const searchBoxes = document.querySelectorAll('.search-box input');
+            
+            searchBoxes.forEach(searchBox => {
+                searchBox.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const section = this.closest('.content-section');
+                    const cards = section.querySelectorAll('.content-card');
+                    
+                    cards.forEach(card => {
+                        const title = card.querySelector('.content-card-title').textContent.toLowerCase();
+                        const description = card.querySelector('.content-card-description').textContent.toLowerCase();
+                        
+                        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Add filter functionality to all dropdowns
+            const filterDropdowns = document.querySelectorAll('.filter-dropdown');
+            
+            filterDropdowns.forEach(dropdown => {
+                dropdown.addEventListener('change', function() {
+                    const selectedTopic = this.value;
+                    const section = this.closest('.content-section');
+                    const cards = section.querySelectorAll('.content-card');
+                    
+                    if (selectedTopic === 'all') {
+                        cards.forEach(card => {
+                            card.style.display = 'block';
+                        });
+                    } else {
+                        cards.forEach(card => {
+                            const title = card.querySelector('.content-card-title').textContent.toLowerCase();
+                            if (title.includes(selectedTopic)) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        // Alert function
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            // Add alert styles
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.padding = '15px 25px';
+            alertDiv.style.borderRadius = '5px';
+            alertDiv.style.color = 'white';
+            alertDiv.style.zIndex = '1000';
+            alertDiv.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            
+            if (type === 'error') {
+                alertDiv.style.backgroundColor = '#e74c3c';
+            } else if (type === 'success') {
+                alertDiv.style.backgroundColor = '#2ecc71';
+            }
+            
+            document.body.appendChild(alertDiv);
+            
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

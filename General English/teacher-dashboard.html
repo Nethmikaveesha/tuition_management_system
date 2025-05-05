@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPlatform - Teacher Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: #34495e;
+        }
+
+        .sidebar-menu i {
+            margin-right: 1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            color: #2c3e50;
+        }
+
+        .upload-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .content-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .content-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .file-upload {
+            border: 2px dashed #3498db;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-upload:hover {
+            background-color: #f7f9fc;
+        }
+
+        .file-upload i {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload p {
+            color: #7f8c8d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card h4 {
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-card p {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+
+        .edit-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <h1>EduPlatform</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+        </ul>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Teacher Dashboard</h2>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" data-section="papers"><i class="fas fa-file-alt"></i> Papers</a></li>
+                <li><a href="#" data-section="videos"><i class="fas fa-video"></i> Videos</a></li>
+                <li><a href="#" data-section="notes"><i class="fas fa-sticky-note"></i> Notes</a></li>
+                <li><a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Teacher Dashboard</h2>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <h3>Welcome to Your Dashboard</h3>
+                <p>Here you can manage your teaching materials and track student progress.</p>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h4>Total Students</h4>
+                        <p>0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Total Materials</h4>
+                        <p>0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>System Status</h4>
+                        <p>Online</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Papers Section -->
+            <div id="papers-section" class="content-section hidden">
+                <h3>Upload Papers</h3>
+                <form class="upload-form">
+                    <div class="form-group">
+                        <label for="paper-title">Paper Title</label>
+                        <input type="text" id="paper-title" name="paper-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paper-subject">Subject</label>
+                        <select id="paper-subject" name="paper-subject" required>
+                            <option value="">Select Topic</option>
+                            <option value="reading">Reading Comprehension</option>
+                            <option value="writing">Writing Skills</option>
+                            <option value="grammar">Grammar</option>
+                            <option value="vocabulary">Vocabulary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="paper-description">Description</label>
+                        <textarea id="paper-description" name="paper-description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Paper</label>
+                        <div class="file-upload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag and drop your file here or click to browse</p>
+                            <input type="file" id="paper-file" name="paper-file" accept=".pdf,.doc,.docx" style="display: none;">
+                        </div>
+                    </div>
+                    <button type="submit" class="upload-btn">Upload Paper</button>
+                </form>
+
+                <!-- Papers Table -->
+                <div class="table-container" style="margin-top: 2rem;">
+                    <h3>Uploaded Papers</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Topic</th>
+                                <th>Description</th>
+                                <th>Upload Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Reading Comprehension Practice</td>
+                                <td>Reading</td>
+                                <td>Practice papers for reading comprehension</td>
+                                <td>2024-03-15</td>
+                                <td>
+                                    <button class="action-btn download-btn">Download</button>
+                                    <button class="action-btn edit-btn">Edit</button>
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Upload video Section -->
+            <div id="videos-section" class="content-section hidden">
+                <h3>Upload Video</h3>
+                <form class="upload-form">
+                    <div class="form-group">
+                        <label for="video-title">Video Title</label>
+                        <input type="text" id="video-title" name="video-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="video-subject">Subject</label>
+                        <select id="video-subject" name="video-subject" required>
+                            <option value="">Select Topic</option>
+                            <option value="reading">Reading Skills</option>
+                            <option value="writing">Writing Skills</option>
+                            <option value="grammar">Grammar</option>
+                            <option value="vocabulary">Vocabulary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="video-description">Description</label>
+                        <textarea id="video-description" name="video-description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Video</label>
+                        <div class="file-upload">
+                            <i class="fas fa-video"></i>
+                            <p>Drag and drop your video here or click to browse</p>
+                            <input type="file" id="video-file" name="video-file" accept="video/*" style="display: none;">
+                        </div>
+                    </div>
+                    <button type="submit" class="upload-btn">Upload Video</button>
+                </form>
+
+                <!-- Videos Table -->
+                <div class="table-container" style="margin-top: 2rem;">
+                    <h3>Uploaded Videos</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Topic</th>
+                                <th>Description</th>
+                                <th>Upload Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Essay Writing Masterclass</td>
+                                <td>Writing</td>
+                                <td>Step-by-step guide to writing essays</td>
+                                <td>2024-03-15</td>
+                                <td>
+                                    <button class="action-btn watch-btn">Watch</button>
+                                    <button class="action-btn edit-btn">Edit</button>
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Upload notes Section -->
+            <div id="notes-section" class="content-section hidden">
+                <h3>Upload Notes</h3>
+                <form class="upload-form">
+                    <div class="form-group">
+                        <label for="notes-title">Notes Title</label>
+                        <input type="text" id="notes-title" name="notes-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes-subject">Subject</label>
+                        <select id="notes-subject" name="notes-subject" required>
+                            <option value="">Select Topic</option>
+                            <option value="reading">Reading Skills</option>
+                            <option value="writing">Writing Skills</option>
+                            <option value="grammar">Grammar</option>
+                            <option value="vocabulary">Vocabulary</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes-description">Description</label>
+                        <textarea id="notes-description" name="notes-description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Notes</label>
+                        <div class="file-upload">
+                            <i class="fas fa-file-alt"></i>
+                            <p>Drag and drop your notes here or click to browse</p>
+                            <input type="file" id="notes-file" name="notes-file" accept=".pdf,.doc,.docx,.txt" style="display: none;">
+                        </div>
+                    </div>
+                    <button type="submit" class="upload-btn">Upload Notes</button>
+                </form>
+
+                <!-- Notes Table -->
+                <div class="table-container" style="margin-top: 2rem;">
+                    <h3>Uploaded Notes</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Topic</th>
+                                <th>Description</th>
+                                <th>Upload Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Grammar Rules Guide</td>
+                                <td>Grammar</td>
+                                <td>Comprehensive grammar rules and examples</td>
+                                <td>2024-03-15</td>
+                                <td>
+                                    <button class="action-btn view-btn">View</button>
+                                    <button class="action-btn edit-btn">Edit</button>
+                                    <button class="action-btn delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Function to show the selected section and hide others
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update active state in sidebar
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId.replace('-section', '')) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Alert function
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            // Add alert styles
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.padding = '15px 25px';
+            alertDiv.style.borderRadius = '5px';
+            alertDiv.style.color = 'white';
+            alertDiv.style.zIndex = '1000';
+            alertDiv.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            
+            if (type === 'error') {
+                alertDiv.style.backgroundColor = '#e74c3c';
+            } else if (type === 'success') {
+                alertDiv.style.backgroundColor = '#2ecc71';
+            }
+            
+            document.body.appendChild(alertDiv);
+            
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Add event listeners when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar navigation
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a[data-section]');
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    showSection(sectionId);
+                });
+            });
+
+            // Initialize file upload functionality
+            const fileUploads = document.querySelectorAll('.file-upload');
+            
+            fileUploads.forEach(upload => {
+                upload.addEventListener('click', function() {
+                    const fileInput = this.querySelector('input[type="file"]');
+                    fileInput.click();
+                });
+                
+                const fileInput = upload.querySelector('input[type="file"]');
+                fileInput.addEventListener('change', function() {
+                    const fileName = this.files[0] ? this.files[0].name : 'No file selected';
+                    const paragraph = upload.querySelector('p');
+                    paragraph.textContent = fileName;
+                });
+            });
+
+            // Papers Form Validation
+            const papersForm = document.querySelector('#papers-section .upload-form');
+            const papersTable = document.querySelector('#papers-section table tbody');
+            
+            if (papersForm) {
+                papersForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const title = document.getElementById('paper-title').value.trim();
+                    const topic = document.getElementById('paper-subject').value;
+                    const description = document.getElementById('paper-description').value.trim();
+                    const file = document.getElementById('paper-file').files[0];
+                    
+                    // Validation checks
+                    if (!title) {
+                        showAlert('Please enter paper title', 'error');
+                        return;
+                    }
+                    
+                    if (!topic) {
+                        showAlert('Please select a topic', 'error');
+                        return;
+                    }
+                    
+                    if (!description) {
+                        showAlert('Please enter paper description', 'error');
+                        return;
+                    }
+                    
+                    if (!file) {
+                        showAlert('Please upload a file', 'error');
+                        return;
+                    }
+                    
+                    // Add new paper to table
+                    const newRow = document.createElement('tr');
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    
+                    newRow.innerHTML = `
+                        <td>${title}</td>
+                        <td>${topic}</td>
+                        <td>${description}</td>
+                        <td>${currentDate}</td>
+                        <td>
+                            <button class="action-btn download-btn">Download</button>
+                            <button class="action-btn edit-btn">Edit</button>
+                            <button class="action-btn delete-btn">Delete</button>
+                        </td>
+                    `;
+                    
+                    papersTable.appendChild(newRow);
+                    
+                    // Show success message
+                    showAlert('Paper uploaded successfully!', 'success');
+                    
+                    // Reset form
+                    papersForm.reset();
+                    
+                    // Add event listeners to new row
+                    addRowEventListeners(newRow, 'paper');
+                });
+            }
+
+            // Videos Form Validation
+            const videosForm = document.querySelector('#videos-section .upload-form');
+            const videosTable = document.querySelector('#videos-section table tbody');
+            
+            if (videosForm) {
+                videosForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const title = document.getElementById('video-title').value.trim();
+                    const topic = document.getElementById('video-subject').value;
+                    const description = document.getElementById('video-description').value.trim();
+                    const file = document.getElementById('video-file').files[0];
+                    
+                    // Validation checks
+                    if (!title) {
+                        showAlert('Please enter video title', 'error');
+                        return;
+                    }
+                    
+                    if (!topic) {
+                        showAlert('Please select a topic', 'error');
+                        return;
+                    }
+                    
+                    if (!description) {
+                        showAlert('Please enter video description', 'error');
+                        return;
+                    }
+                    
+                    if (!file) {
+                        showAlert('Please upload a video file', 'error');
+                        return;
+                    }
+                    
+                    // Add new video to table
+                    const newRow = document.createElement('tr');
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    
+                    newRow.innerHTML = `
+                        <td>${title}</td>
+                        <td>${topic}</td>
+                        <td>${description}</td>
+                        <td>${currentDate}</td>
+                        <td>
+                            <button class="action-btn watch-btn">Watch</button>
+                            <button class="action-btn edit-btn">Edit</button>
+                            <button class="action-btn delete-btn">Delete</button>
+                        </td>
+                    `;
+                    
+                    videosTable.appendChild(newRow);
+                    
+                    // Show success message
+                    showAlert('Video uploaded successfully!', 'success');
+                    
+                    // Reset form
+                    videosForm.reset();
+                    
+                    // Add event listeners to new row
+                    addRowEventListeners(newRow, 'video');
+                });
+            }
+
+            // Notes Form Validation
+            const notesForm = document.querySelector('#notes-section .upload-form');
+            const notesTable = document.querySelector('#notes-section table tbody');
+            
+            if (notesForm) {
+                notesForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const title = document.getElementById('notes-title').value.trim();
+                    const topic = document.getElementById('notes-subject').value;
+                    const description = document.getElementById('notes-description').value.trim();
+                    const file = document.getElementById('notes-file').files[0];
+                    
+                    // Validation checks
+                    if (!title) {
+                        showAlert('Please enter notes title', 'error');
+                        return;
+                    }
+                    
+                    if (!topic) {
+                        showAlert('Please select a topic', 'error');
+                        return;
+                    }
+                    
+                    if (!description) {
+                        showAlert('Please enter notes description', 'error');
+                        return;
+                    }
+                    
+                    if (!file) {
+                        showAlert('Please upload a file', 'error');
+                        return;
+                    }
+                    
+                    // Add new notes to table
+                    const newRow = document.createElement('tr');
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    
+                    newRow.innerHTML = `
+                        <td>${title}</td>
+                        <td>${topic}</td>
+                        <td>${description}</td>
+                        <td>${currentDate}</td>
+                        <td>
+                            <button class="action-btn view-btn">View</button>
+                            <button class="action-btn edit-btn">Edit</button>
+                            <button class="action-btn delete-btn">Delete</button>
+                        </td>
+                    `;
+                    
+                    notesTable.appendChild(newRow);
+                    
+                    // Show success message
+                    showAlert('Notes uploaded successfully!', 'success');
+                    
+                    // Reset form
+                    notesForm.reset();
+                    
+                    // Add event listeners to new row
+                    addRowEventListeners(newRow, 'notes');
+                });
+            }
+
+            // Add download functionality
+            const downloadButtons = document.querySelectorAll('.download-btn');
+            downloadButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const title = row.cells[0].textContent;
+                    showAlert(`Downloading ${title}...`, 'success');
+                    // In a real application, this would trigger the actual download
+                });
+            });
+
+            // Add watch functionality for videos
+            const watchButtons = document.querySelectorAll('.watch-btn');
+            watchButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const title = row.cells[0].textContent;
+                    showAlert(`Playing ${title}...`, 'success');
+                    // In a real application, this would open the video player
+                });
+            });
+
+            // Add view functionality for notes
+            const viewButtons = document.querySelectorAll('.view-btn');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const title = row.cells[0].textContent;
+                    showAlert(`Opening ${title}...`, 'success');
+                    // In a real application, this would open the notes viewer
+                });
+            });
+
+            // Function to add event listeners to table rows
+            function addRowEventListeners(row, type) {
+                const editBtn = row.querySelector('.edit-btn');
+                const deleteBtn = row.querySelector('.delete-btn');
+                const actionBtn = row.querySelector(`.${type}-btn`);
+                
+                editBtn.addEventListener('click', function() {
+                    const cells = row.cells;
+                    const currentTitle = cells[0].textContent;
+                    const currentTopic = cells[1].textContent;
+                    const currentDescription = cells[2].textContent;
+                    
+                    const newTitle = prompt('Enter new title:', currentTitle);
+                    if (newTitle && newTitle.trim() !== '') {
+                        cells[0].textContent = newTitle.trim();
+                        showAlert(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully!`, 'success');
+                    }
+                });
+                
+                deleteBtn.addEventListener('click', function() {
+                    if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                        row.remove();
+                        showAlert(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`, 'success');
+                    }
+                });
+
+                if (actionBtn) {
+                    actionBtn.addEventListener('click', function() {
+                        const title = row.cells[0].textContent;
+                        if (type === 'download') {
+                            showAlert(`Downloading ${title}...`, 'success');
+                        } else if (type === 'watch') {
+                            showAlert(`Playing ${title}...`, 'success');
+                        } else if (type === 'view') {
+                            showAlert(`Opening ${title}...`, 'success');
+                        }
+                    });
+                }
+            }
+
+            // Add event listeners to existing rows
+            const existingRows = document.querySelectorAll('table tbody tr');
+            existingRows.forEach(row => {
+                const type = row.closest('table').parentElement.previousElementSibling.textContent.toLowerCase();
+                addRowEventListeners(row, type.includes('papers') ? 'paper' : type.includes('videos') ? 'video' : 'notes');
+            });
+        });
+    </script>
+</body>
+</html> 
